@@ -13,11 +13,20 @@ import java.net.SocketAddress;
  */
 public class InHandlerTest {
     public static void main(String[] args) {
+        // ChannelInitializer本身也是一个ChannelInboundHandlerAdapter
+        // ChannelInitializer在完成了通道的初始化之后，为什么要将自己从流水线中删除呢？
+        // 原因很简单，就是一条通道流水线只需要做一次装配工作。
         ChannelInitializer initializer = new ChannelInitializer() {
             @Override
             protected void initChannel(Channel channel) throws Exception {
-                channel.pipeline().addLast(new InHandlerDemo());
-                channel.pipeline().addLast(new OutHandlerDemo());
+//                channel.pipeline().addLast(new InHandlerDemo("A"));
+//                channel.pipeline().addLast(new InHandlerDemo("B"));
+//                channel.pipeline().addLast(new InHandlerDemo("C"));
+
+
+                channel.pipeline().addLast(new OutHandlerDemo("1"));
+                channel.pipeline().addLast(new OutHandlerDemo("2"));
+
             }
         };
         EmbeddedChannel embeddedChannel = new EmbeddedChannel(initializer);
@@ -25,8 +34,8 @@ public class InHandlerTest {
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(1);
 
-        embeddedChannel.writeInbound(byteBuf);
-        embeddedChannel.flush();
+//        embeddedChannel.writeInbound(byteBuf);
+//        embeddedChannel.flush();
         embeddedChannel.writeOutbound(byteBuf);
         embeddedChannel.flush();
 
@@ -40,147 +49,148 @@ public class InHandlerTest {
 
     }
     private static class OutHandlerDemo extends ChannelOutboundHandlerAdapter {
-        public OutHandlerDemo() {
-            super();
+        private String name;
+
+        public OutHandlerDemo(String name) {
+            this.name = name;
         }
 
         @Override
         public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) throws Exception {
-            super.bind(ctx, localAddress, promise);
-            System.out.println("OutHandlerDemo::bind....");
-
+            System.out.println("OutHandlerDemo::bind...." + name);
+//            super.bind(ctx, localAddress, promise);
         }
 
         @Override
         public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) throws Exception {
-            super.connect(ctx, remoteAddress, localAddress, promise);
-            System.out.println("OutHandlerDemo::connect....");
-
+            System.out.println("OutHandlerDemo::connect...." + name);
+//            super.connect(ctx, remoteAddress, localAddress, promise);
         }
 
         @Override
         public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+            System.out.println("OutHandlerDemo::disconnect...." + name);
             super.disconnect(ctx, promise);
-            System.out.println("OutHandlerDemo::disconnect....");
-
         }
 
         @Override
         public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+            System.out.println("OutHandlerDemo::close...." + name);
             super.close(ctx, promise);
-            System.out.println("OutHandlerDemo::close....");
-
         }
 
         @Override
         public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-            super.deregister(ctx, promise);
-            System.out.println("OutHandlerDemo::deregister....");
-
+            System.out.println("OutHandlerDemo::deregister...." + name);
+//            super.deregister(ctx, promise);
         }
 
         @Override
         public void read(ChannelHandlerContext ctx) throws Exception {
-            super.read(ctx);
-            System.out.println("OutHandlerDemo::read....");
-
+            System.out.println("OutHandlerDemo::read...." + name);
+//            super.read(ctx);
         }
 
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-            super.write(ctx, msg, promise);
-            System.out.println("OutHandlerDemo::write....");
-
+            System.out.println("OutHandlerDemo::write...." + name);
+//            super.write(ctx, msg, promise);
         }
 
         @Override
         public void flush(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("OutHandlerDemo::flush...." + name);
             super.flush(ctx);
-            System.out.println("OutHandlerDemo::flush....");
-
         }
 
         @Override
         public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("OutHandlerDemo::handlerAdded...." + name);
             super.handlerAdded(ctx);
-            System.out.println("OutHandlerDemo::handlerAdded....");
-
         }
 
         @Override
         public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("OutHandlerDemo::handlerRemoved...." + name);
             super.handlerRemoved(ctx);
-            System.out.println("OutHandlerDemo::handlerRemoved....");
-
         }
     }
     private static class InHandlerDemo extends ChannelInboundHandlerAdapter {
+        private String name;
+
+        public InHandlerDemo(String name) {
+            this.name = name;
+        }
+
         @Override
         public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::handlerAdded...." + name);
             super.handlerAdded(ctx);
-            System.out.println("InHandlerDemo::handlerAdded....");
 
         }
 
         @Override
         public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelRegistered...." + name);
             ctx.fireChannelRegistered();
-            System.out.println("InHandlerDemo::channelRegistered....");
         }
 
         @Override
         public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelUnregistered...." + name);
+
             ctx.fireChannelUnregistered();
-            System.out.println("InHandlerDemo::channelUnregistered....");
 
         }
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelActive...." + name);
+
             ctx.fireChannelActive();
-            System.out.println("InHandlerDemo::channelActive....");
         }
 
         @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelInactive...." + name);
             ctx.fireChannelInactive();
-            System.out.println("InHandlerDemo::channelInactive....");
         }
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            ctx.fireChannelRead(msg);
-            System.out.println("InHandlerDemo::channelRead....");
+            System.out.println("InHandlerDemo::channelRead...." + name);
+//            ctx.fireChannelRead(msg);
+            super.channelRead(ctx, msg);
         }
         @Override
         public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelReadComplete...." + name);
             ctx.fireChannelReadComplete();
-            System.out.println("InHandlerDemo::channelReadComplete....");
         }
 
         @Override
         public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+            System.out.println("InHandlerDemo::userEventTriggered...." + name);
             ctx.fireUserEventTriggered(evt);
-            System.out.println("InHandlerDemo::userEventTriggered....");
 
         }
 
         @Override
         public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::channelWritabilityChanged...." + name);
             ctx.fireChannelWritabilityChanged();
-            System.out.println("InHandlerDemo::channelWritabilityChanged....");
 
         }
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            System.out.println("InHandlerDemo::exceptionCaught...." + name);
             ctx.fireExceptionCaught(cause);
-            System.out.println("InHandlerDemo::exceptionCaught....");
         }
 
         @Override
         public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("InHandlerDemo::handlerRemoved...." + name);
             super.handlerRemoved(ctx);
-            System.out.println("InHandlerDemo::handlerRemoved....");
 
         }
     }
