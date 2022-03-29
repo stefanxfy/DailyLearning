@@ -51,4 +51,31 @@ public class ByteBufTest {
             Unpooled.buffer();
         }
     }
+
+    @Test
+    public void testCompositeByteBuf() {
+        ByteBuf a = Unpooled.copiedBuffer("stefan", Charset.forName("utf-8"));
+        ByteBuf b = Unpooled.copiedBuffer("xfy", Charset.forName("utf-8"));
+
+        CompositeByteBuf compositeByteBuf = ByteBufAllocator.DEFAULT.compositeBuffer();
+        compositeByteBuf.addComponents(a, b);
+        for (ByteBuf byteBuf : compositeByteBuf) {
+            System.out.println(new String(byteBuf.array(), byteBuf.readerIndex(), byteBuf.readableBytes()));
+        }
+        System.out.println(compositeByteBuf.nioBuffer().flip().limit());
+    }
+
+    @Test
+    public void testWrap() {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{1,2,34,5});
+        System.out.println(byteBuf.isDirect());
+        ByteBuf a = Unpooled.copiedBuffer("stefan", Charset.forName("utf-8"));
+        ByteBuf b = Unpooled.copiedBuffer("xfy", Charset.forName("utf-8"));
+        CompositeByteBuf ab = (CompositeByteBuf) Unpooled.wrappedBuffer(a, b);
+        for (ByteBuf buf : ab) {
+            System.out.println(new String(buf.array(), buf.readerIndex(), buf.readableBytes()));
+
+        }
+
+    }
 }
