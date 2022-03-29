@@ -24,3 +24,6 @@ hs_err_pid*
 /.idea/
 /netty/.idea/
 /netty/netty.iml
+netty/src/main/resources/
+netty/src/test/
+netty/target/generated-sources/
