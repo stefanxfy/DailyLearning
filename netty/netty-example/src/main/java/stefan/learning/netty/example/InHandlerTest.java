@@ -133,6 +133,7 @@ public class InHandlerTest {
         public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
             System.out.println("InHandlerDemo::channelRegistered...." + name);
             ctx.fireChannelRegistered();
+            ctx.alloc().heapBuffer();
         }
 
         @Override

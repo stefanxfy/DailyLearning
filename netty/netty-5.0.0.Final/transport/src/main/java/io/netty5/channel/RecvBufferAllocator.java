@@ -25,6 +25,7 @@ import io.netty5.util.internal.UnstableApi;
 import static java.util.Objects.requireNonNull;
 
 /**
+ * 分配一个新的接收缓冲区，该缓冲区的容量可能大到足以读取所有入站数据，但又足够小到不要浪费空间。
  * Allocates a new receive buffer whose capacity is probably large enough to read all inbound data and small enough
  * not to waste its space.
  */

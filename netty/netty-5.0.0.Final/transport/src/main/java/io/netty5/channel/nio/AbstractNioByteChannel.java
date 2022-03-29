@@ -147,15 +147,19 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
         @Override
         public final void read() {
+            // 获取 channel 的 配置信息
             final ChannelConfig config = config();
             if (shouldBreakReadReady(config)) {
                 clearReadPending();
                 return;
             }
+            // 获取channel的处理链pipeline
             final ChannelPipeline pipeline = pipeline();
+            // 是否使用 RecvBufferAllocator
             final boolean useBufferApi = config.getRecvBufferAllocatorUseBuffer();
             final BufferAllocator bufferAllocator = config.getBufferAllocator();
             final ByteBufAllocator byteBufAllocator = config.getAllocator();
+            // 默认 AdaptiveRecvBufferAllocator
             final RecvBufferAllocator.Handle allocHandle = recvBufAllocHandle();
             allocHandle.reset(config);
 
@@ -184,6 +188,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
                     allocHandle.incMessagesRead(1);
                     readPending = false;
+                    // 发送数据到流水线，进行入站处理
                     pipeline.fireChannelRead(buffer);
                     buffer = null;
                 } while (allocHandle.continueReading());

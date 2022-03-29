@@ -27,3 +27,4 @@ hs_err_pid*
 netty/src/main/resources/
 netty/src/test/
 netty/target/generated-sources/
+/netty/netty-example/.idea/

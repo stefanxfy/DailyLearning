@@ -15,6 +15,14 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.75.Final</version>
         </dependency>
+
+        <!--测试-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>

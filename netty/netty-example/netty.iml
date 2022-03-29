@@ -44,5 +44,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-transport-native-kqueue:osx-aarch_64:4.1.75.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-resolver-dns-native-macos:osx-x86_64:4.1.75.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-resolver-dns-native-macos:osx-aarch_64:4.1.75.Final" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>
 </module>
