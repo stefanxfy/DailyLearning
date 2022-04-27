@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * https://leetcode-cn.com/leetbook/read/illustration-of-algorithm/5dt66m/
  * 剑指 Offer 06. 从尾到头打印链表
  * 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
  * @author stefan
