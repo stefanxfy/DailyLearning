@@ -301,6 +301,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
     private String validatePathForCreate(String path, long sessionId) throws BadArgumentsException {
         int lastSlash = path.lastIndexOf('/');
         if (lastSlash == -1 || path.indexOf('\0') != -1 || failCreate) {
+            // 没有 / 或者 有 \0 就是非法
             LOG.info("Invalid path {} with session 0x{}", path, Long.toHexString(sessionId));
             throw new KeeperException.BadArgumentsException(path);
         }
@@ -693,13 +694,16 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         }
         CreateMode createMode = CreateMode.fromFlag(flags);
         validateCreateRequest(path, createMode, request, ttl);
+        // 返回父路径
         String parentPath = validatePathForCreate(path, request.sessionId);
 
         List<ACL> listACL = fixupACL(path, request.authInfo, acl);
+        // 获取父路径的 修改记录
         ChangeRecord parentRecord = getRecordForPath(parentPath);
 
         zks.checkACL(request.cnxn, parentRecord.acl, ZooDefs.Perms.CREATE, request.authInfo, path, listACL);
         int parentCVersion = parentRecord.stat.getCversion();
+
         if (createMode.isSequential()) {
             path = path + String.format(Locale.ENGLISH, "%010d", parentCVersion);
         }
@@ -715,6 +719,7 @@ public class PrepRequestProcessor extends ZooKeeperCriticalThread implements Req
         if (ephemeralParent) {
             throw new KeeperException.NoChildrenForEphemeralsException(path);
         }
+        // cversion + 1
         int newCversion = parentRecord.stat.getCversion() + 1;
         zks.checkQuota(path, null, data, OpCode.create);
         if (type == OpCode.createContainer) {
