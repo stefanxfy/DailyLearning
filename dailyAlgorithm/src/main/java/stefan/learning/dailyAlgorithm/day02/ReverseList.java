@@ -103,7 +103,7 @@ public class ReverseList {
         // 9<--8<--7
         // 10<--9<--8<--7
         head.next.next = head;
-        head.next = null;
+//        head.next = null;
         return tail;
     }
 
