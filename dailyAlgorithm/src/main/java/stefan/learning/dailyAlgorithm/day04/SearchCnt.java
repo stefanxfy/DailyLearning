@@ -46,4 +46,80 @@ public class SearchCnt {
         return cnt;
     }
 
+    public static int search3(int[] nums, int target) {
+        // 搜索右边界 right
+        // 测试用例：
+        //  0 1 2 3 4 5
+        // [5,7,7,8,8,10]
+        // target = 8
+        int i = 0, j = nums.length - 1;
+        while(i <= j) {
+            int m = (i + j) / 2;
+            if(nums[m] <= target) {
+                i = m + 1;
+            } else {
+                j = m - 1;
+            }
+            // 当退出while时,j+1=i
+        }
+        int right = i;
+        // 若数组中无 target ，则提前返回
+        if(j >= 0 && nums[j] != target) return 0;
+        // 搜索左边界 right
+        i = 0; j = nums.length - 1;
+        while(i <= j) {
+            int m = (i + j) / 2;
+            if(nums[m] < target) i = m + 1;
+            else j = m - 1;
+        }
+        int left = j;
+        return right - left - 1;
+    }
+
+    public static int search4(int[] nums, int target) {
+        int low = 0, high = nums.length-1;
+        // 使用二分查找法 找到 target 所在 index
+        int targetIndex = -1;
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            if (nums[mid] > target) {
+                high = mid -1;
+            } else if (nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                targetIndex = mid;
+                break;
+            }
+        }
+        if (targetIndex == -1) {
+            return 0;
+        }
+        // 遍历右边
+        int rightCnt = 0;
+        for (int i = targetIndex + 1; i < nums.length; i++) {
+            if (nums[i] == target) {
+                rightCnt++;
+            } else {
+                break;
+            }
+        }
+        // 遍历左边
+        int leftCnt = 0;
+        for (int i = targetIndex - 1; i >= 0; i--) {
+            if (nums[i] == target) {
+                leftCnt++;
+            } else {
+                break;
+            }
+        }
+
+        return rightCnt + leftCnt + 1;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {5,7,7,8,8,10};
+        int cnt = search3(nums, 8);
+        System.out.println(cnt);
+    }
+
 }
