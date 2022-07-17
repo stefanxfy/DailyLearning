@@ -82,6 +82,27 @@ public class ReverseList {
         return pre;
     }
 
+    public static ListNode reverseList5(ListNode head) {
+        // 10-->9-->8-->7-->null
+        // null<--10<--9<--8<--7
+        // 前驱指针
+        ListNode pre = null;
+        // 当前指针
+        ListNode cur = head;
+        while (cur != null) {
+            // 提前保存当前节点的next，保证向右遍历不会中断
+            ListNode tmp = cur.next;
+            // 反转
+            cur.next = pre;
+            // pre向右移到cur
+            pre = cur;
+            // cur向右移到tmp
+            cur = tmp;
+        }
+        // 遍历到最后了，cur=null，那么pre就是尾节点返回
+        return pre;
+    }
+
     /**
      * 递归
      * 执行用时：0 ms, 在所有 Java 提交中击败了100.00%的用户
@@ -90,19 +111,30 @@ public class ReverseList {
      * @return
      */
     public static ListNode reverseList3(ListNode head) {
-        // 10-->9-->8-->7
-        //当到达尾部，则停止递归
+        // 10-->9-->8-->7-->null
+        // null<--10<--9<--8<--7
+        //当递归到尾部，则停止返回
         if(head == null || head.next == null){
-            //这里head是尾部
             return head;
         }
+        // 上半部分是 顺时针
+        // 递归遇到终止条件返回尾节点
         ListNode tail = reverseList3(head.next);
-        //回溯，翻转
-        // 从 倒数第二个开始
+        // 下半部分就是 逆时针
+        //回溯反转
+        // 第一次返回时，head 为 倒数第二个节点，head.next 为尾节点
+        // 那么从尾节点开始反转操作： 尾节点 head.next 的 next 指向 倒数第二个节点 head，即 head.next.next = head
         // 8<--7
+        // 第二次返回时，head 就是 倒数第三个节点，head.next 为 倒数第二个节点
+        // 那么反转操作：倒数第二个节点 head.next 的next指向倒数第三个节点 head，即 head.next.next = head
         // 9<--8<--7
-        // 10<--9<--8<--7
+        // 以此类推，直到回溯到原链表的头节点 head，反转操作 head的下一个节点的next指向 head，即 head.next.next = head
+        // 一切非常顺利，但已运行死循环了，那是因为 原链表的头节点next指针没有修改，依然指向的是头节点的下一个节点，而头节点的next已经反转指向头节点，这样就形成了一个环
+        // 10<-->9<--8<--7
         head.next.next = head;
+        // 所以还需要修改 原链表头节点的next指向null。
+        // null<--10<--9<--8<--7
+        // 其实 每个回溯过程 都把当前节点的next 和下一个节点 主动断开，防止最后形成环
         head.next = null;
         return tail;
     }
@@ -123,11 +155,14 @@ public class ReverseList {
         // cur = 9,  pre = 10
         // cur = 8,  pre = 9
         // cur = 7,  pre = 8
-        // cur=null, pre = 7
+
+        // 终止条件
         if (cur == null) {
-            return pre; // 终止条件
+            // cur== null 可能一开始 链表就为null
+            // 或者遍历到了 尾节点的 next
+            // 那么尾节点就是 pre
+            return pre;
         }
-        // 递归后继节点
         // cur=null, pre = 7
         // 最终返回 res = 7
         ListNode res = recur(cur.next, cur);
@@ -135,8 +170,10 @@ public class ReverseList {
         // cur = 8,  pre = 9
         // cur = 9,  pre = 10
         // cur = 10, pre = null
-        cur.next = pre;              // 修改节点引用指向
-        return res;                  // 返回反转链表的头节点
+        // 修改节点引用指向
+        cur.next = pre;
+        // 返回反转后链表的头节点
+        return res;
     }
 
     public static void main(String[] args) {
